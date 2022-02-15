@@ -1,0 +1,9 @@
+/.config
+/.replit
+/.vs
+/config.json
+/poetry.lock
+/pyproject.toml
+/replit.nix
+/sqliteDatabase.db
+/__pycache__
