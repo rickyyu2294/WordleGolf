@@ -38,7 +38,7 @@ client = discord.Client()
 @client.event
 async def on_ready():
   print('We have logged in as {0.user}'.format(client))
-  print('v0.04')
+  print('v0.05')
   database.initialize_database(DB_FILE)
 
   await midnight()
@@ -69,6 +69,7 @@ async def on_message(message):
   # CHECK SCORE ====================================================
   # check daily and weekly score and print both in channel
   if message.content.startswith('$score'):
+    tokens = message.content.split()
     print("Today's date:", today)
     # dummy messages
     await message.channel.send("Stats for " + name)
@@ -83,7 +84,7 @@ async def on_message(message):
     # if sum does not exist, notify they need to participate once?
     # (or, default to giving them 6 pts per missed day?)
 
-  # / CHECK SCORE ==================================================
+  # CHECK SCORE ==================================================
 
   # Match Wordle Message
   pattern = re.compile("Wordle [0-9].. [0-9]/[0-9]")

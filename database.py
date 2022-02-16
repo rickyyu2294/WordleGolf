@@ -14,19 +14,23 @@ def initialize_database(db_file):
                                         puzzle_id integer NOT NULL,
                                         user_id integer NOT NULL
                                     );"""
-
+    sql_create_scores_puzzle_id_index =  """CREATE INDEX 
+                                            IF NOT EXISTS scores_puzzle_id_idx
+                                            ON scores(puzzle_id);"""        
     conn = create_connection(db_file)
 
     if conn is not None:
-        create_table(conn, sql_create_users_table)
-        create_table(conn, sql_create_scores_table)
+        execute_sql(conn, sql_create_users_table)
+        execute_sql(conn, sql_create_scores_table)
+        execute_sql(conn, sql_create_scores_puzzle_id_index)
+
         conn.close()
     else:
         print("Error! cannot create the database connection")
 
 def insert_user(db_file, name):
     conn = create_connection(db_file)
-    sql =    """INSERT INTO users(name) VALUES(?)"""
+    sql =    """INSERT INTO users(name) VALUES(?);"""
 
     if conn is not None:
         cur = conn.cursor()
@@ -41,7 +45,7 @@ def insert_user(db_file, name):
 
 def add_score(db_file, user_id, puzzle_id, score):
     conn = create_connection(db_file)
-    sql =    """INSERT INTO scores(score, puzzle_id, user_id) VALUES(?, ?, ?)"""
+    sql =    """INSERT INTO scores(score, puzzle_id, user_id) VALUES(?, ?, ?);"""
 
     if conn is not None:
         cur = conn.cursor()
@@ -97,7 +101,7 @@ def create_connection(db_file):
 
     return conn
 
-def create_table(conn, create_table_sql):
+def execute_sql(conn, create_table_sql):
     try:
         c = conn.cursor()
         c.execute(create_table_sql)
