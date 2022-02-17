@@ -57,6 +57,7 @@ async def on_message(message):
     return
 
   name = str(message.author) 
+  user_id = database.select_user_id(DB_FILE, name)
   today = date.today()
 
   if message.content.startswith('$hello'):
@@ -69,12 +70,24 @@ async def on_message(message):
   # CHECK SCORE ====================================================
   # check daily and weekly score and print both in channel
   if message.content.startswith('$score'):
+    if user_id is None:
+      await message.channel.send("No record of user " + name)
+
     tokens = message.content.split()
-    print("Today's date:", today)
+    if len(tokens) == 1:
+      print("PRINT WEEKS SCORE")
+    if len(tokens) == 2 and tokens[1].isdigit():
+      print("show score")
+      puzzle_id = str(tokens[1])
+      score = str(database.select_user_score_for_puzzle_id(DB_FILE, user_id, puzzle_id))
+      if score is not None:
+        await message.channel.send(name + " scored " + score + " on day " + puzzle_id)
+      else:
+        await message.channel.send(name + " does not have a score on day " + puzzle_id)
     # dummy messages
-    await message.channel.send("Stats for " + name)
-    await message.channel.send("Today's score is: " + "[score]")
-    await message.channel.send("Total points for the week: " + "[scoreSum]")
+    # await message.channel.send("Stats for " + name)
+    # await message.channel.send("Today's score is: " + "[score]")
+    # await message.channel.send("Total points for the week: " + "[scoreSum]")
 
     # if played today, return daily score
     # print("Your score today is ")
@@ -95,14 +108,14 @@ async def on_message(message):
     name = str(message.author)
     puzzle_id = s[1]
     score = s[2].split("/")[0]
-    await addScore(message, name, puzzle_id, score)
+    await addScore(message, user_id, name, puzzle_id, score)
 
-async def addScore(message, name, puzzle_id, score):
+async def addScore(message, user_id, name, puzzle_id, score):
   # add new score to user's score list
   # check if user is in database
-  user_id = database.select_user_id(DB_FILE, name)
+
   if user_id is not None:
-    score_id = database.select_user_score(DB_FILE, user_id, puzzle_id)
+    score_id = database.select_user_score_for_puzzle_id(DB_FILE, user_id, puzzle_id)
     if score_id is None:
       database.add_score(DB_FILE, user_id, puzzle_id, score)
     else:
