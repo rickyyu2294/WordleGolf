@@ -95,30 +95,27 @@ async def on_message(message):
     name = str(message.author)
     puzzle_id = s[1]
     score = s[2].split("/")[0]
-    addScore(name, puzzle_id, score)
+    await addScore(message, name, puzzle_id, score)
 
-def addScore(name, puzzle_id, score):
+async def addScore(message, name, puzzle_id, score):
   # add new score to user's score list
   # check if user is in database
   user_id = database.select_user_id(DB_FILE, name)
-  print("ADDSCORE")
-  print("User_ID " + str(user_id))
   if user_id is not None:
     score_id = database.select_user_score(DB_FILE, user_id, puzzle_id)
-    print("SCORE_ID " + str(score_id))
     if score_id is None:
-      print("ADDING SCORE FOR EXISTING USER")
       database.add_score(DB_FILE, user_id, puzzle_id, score)
     else:
-      print("SCORE FOR DAY ALREADY EXISTS")
+      await message.add_reaction("❌")
+      print(name + " already scored on day " + puzzle_id)
       return
 
   # else, add new user to db
   else:
     user_id = database.insert_user(DB_FILE, name)
     database.add_score(DB_FILE, user_id, puzzle_id, score)
-    print("ADDING NEW USER " + name)
-  
+  await message.add_reaction("✅")
+
   temp = (name + " scored " + score + " on day " + puzzle_id)
   print(temp)
 

@@ -66,12 +66,9 @@ def select_user_id(db_file, name):
     rows = cur.fetchall()
 
     conn.close()
-    print(rows)
     if len(rows) == 0:
-        print("None")
         return None
     else:
-        print(rows[0][0])
         return rows[0][0]
     
 def select_user_score(db_file, user_id, puzzle_id):
@@ -82,13 +79,9 @@ def select_user_score(db_file, user_id, puzzle_id):
     rows = cur.fetchall()
 
     conn.close()
-    print("SCORES QUERY")
-    print(rows)
     if len(rows) == 0:
-        print("None")
         return None
     else:
-        print(rows[0][0])
         return rows[0][0]
 
 def create_connection(db_file):
