@@ -71,7 +71,7 @@ def select_user_id(db_file, name):
     else:
         return rows[0][0]
     
-def select_user_score(db_file, user_id, puzzle_id):
+def select_user_score_for_puzzle_id(db_file, user_id, puzzle_id):
     conn = create_connection(db_file)
     sql = "SELECT score FROM scores WHERE (user_id=? and puzzle_id=?)"
     cur = conn.cursor()
