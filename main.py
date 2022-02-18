@@ -1,9 +1,10 @@
+from tkinter import W
 import discord
 import os
 import re
 import random
 import asyncio
-from datetime import date
+from datetime import date, timedelta
 from datetime import datetime
 import pytz
 from discord.ext import commands, tasks
@@ -20,6 +21,7 @@ BOT_CHANNEL_ID = 879170130125414450
 BOT_TOKEN = data["token"]
 PST = pytz.timezone('US/Pacific')
 DB_FILE = r"sqliteDatabase.db"
+BASE_WORDLE_ID_TO_DATE = (244, datetime(2022, 2, 18))
 client = discord.Client()
 
 #def delete(name):
@@ -38,7 +40,7 @@ client = discord.Client()
 @client.event
 async def on_ready():
   print('We have logged in as {0.user}'.format(client))
-  print('v0.05')
+  print('v0.06')
   database.initialize_database(DB_FILE)
 
   await midnight()
@@ -70,20 +72,7 @@ async def on_message(message):
   # CHECK SCORE ====================================================
   # check daily and weekly score and print both in channel
   if message.content.startswith('$score'):
-    if user_id is None:
-      await message.channel.send("No record of user " + name)
-
-    tokens = message.content.split()
-    if len(tokens) == 1:
-      print("PRINT WEEKS SCORE")
-    if len(tokens) == 2 and tokens[1].isdigit():
-      print("show score")
-      puzzle_id = str(tokens[1])
-      score = str(database.select_user_score_for_puzzle_id(DB_FILE, user_id, puzzle_id))
-      if score is not None:
-        await message.channel.send(name + " scored " + score + " on day " + puzzle_id)
-      else:
-        await message.channel.send(name + " does not have a score on day " + puzzle_id)
+    await displayScore(message, name, user_id)
     # dummy messages
     # await message.channel.send("Stats for " + name)
     # await message.channel.send("Today's score is: " + "[score]")
@@ -110,6 +99,25 @@ async def on_message(message):
     score = s[2].split("/")[0]
     await addScore(message, user_id, name, puzzle_id, score)
 
+async def displayScore(message, name, user_id):
+    if user_id is None:
+      await message.channel.send("No record of user " + name)
+
+    tokens = message.content.split()
+    if len(tokens) == 1:
+      # get scores of last 7 
+      print("show week score")
+
+
+    if len(tokens) == 2 and tokens[1].isdigit():
+      print("show score")
+      puzzle_id = str(tokens[1])
+      score = str(database.select_user_score_for_puzzle_id(DB_FILE, user_id, puzzle_id))
+      if score is not None:
+        await message.channel.send(name + " scored " + score + " on day " + puzzle_id)
+      else:
+        await message.channel.send(name + " does not have a score on day " + puzzle_id)
+
 async def addScore(message, user_id, name, puzzle_id, score):
   # add new score to user's score list
   # check if user is in database
@@ -132,5 +140,22 @@ async def addScore(message, user_id, name, puzzle_id, score):
   temp = (name + " scored " + score + " on day " + puzzle_id)
   print(temp)
 
+def date_to_puzzle_id(date):
+  delta = BASE_WORDLE_ID_TO_DATE[1] - date
+  delta_days = delta.days
+  return_id = BASE_WORDLE_ID_TO_DATE[0] + delta_days
+  if return_id > 0:
+    return return_id
+
+def puzzle_id_to_date(puzzle_id):
+  # get diff b/t base and requested puzzle_id
+  if puzzle_id <= 0:
+    return None
+  diff = puzzle_id - BASE_WORDLE_ID_TO_DATE[0]
+  return BASE_WORDLE_ID_TO_DATE[1] + timedelta(days=diff)
+
 # Execute
+date = datetime(2022, 2, 19)
+print(str(date_to_puzzle_id(date)))
+
 client.run(BOT_TOKEN)
