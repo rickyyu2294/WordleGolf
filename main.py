@@ -36,7 +36,7 @@ client = discord.Client()
 @client.event
 async def on_ready():
   print('We have logged in as {0.user}'.format(client))
-  print('v0.07')
+  print('v0.08')
   database.initialize_database(DB_FILE)
 
   await midnight()
@@ -47,7 +47,7 @@ async def midnight():
   diff = (targetTime - now).total_seconds()
   await asyncio.sleep(diff)
   channel = client.get_channel(BOT_CHANNEL_ID)
-  await channel.send("Is it midnight?")
+  #await channel.send("Is it midnight?")
 
 @client.event
 async def on_message(message):
