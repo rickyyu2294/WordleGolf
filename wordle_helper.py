@@ -1,3 +1,6 @@
+from datetime import date, timedelta
+from datetime import datetime
+
 BASE_WORDLE_ID_TO_DATE = (244, datetime(2022, 2, 18))
 
 def date_to_puzzle_id(date):
