@@ -2,14 +2,11 @@ from tkinter import W
 import discord
 import os
 import re
-import random
 import asyncio
 from datetime import date, timedelta
 from datetime import datetime
 import pytz
 from discord.ext import commands, tasks
-import time
-import threading
 import database
 import json
 import wordle_helper
@@ -69,23 +66,9 @@ async def on_message(message):
   #   delete(name)
 
   # CHECK SCORE ====================================================
-  # check daily and weekly score and print both in channel
   if message.content.startswith('$score'):
+    #
     await displayScore(message, name, user_id)
-    # dummy messages
-    # await message.channel.send("Stats for " + name)
-    # await message.channel.send("Today's score is: " + "[score]")
-    # await message.channel.send("Total points for the week: " + "[scoreSum]")
-
-    # if played today, return daily score
-    # print("Your score today is ")
-    # else, notify that they need to play today
-
-    # additionally, attempt to return running sum for weekly score
-    # if sum does not exist, notify they need to participate once?
-    # (or, default to giving them 6 pts per missed day?)
-
-  # CHECK SCORE ==================================================
 
   # Match Wordle Message
   pattern = re.compile("Wordle [0-9].. [0-9]/[0-9]")
@@ -121,13 +104,15 @@ async def displayScore(message, name, user_id):
         delta = today.weekday()
         date = today - timedelta(days=delta)
         print("delta " + str(delta) + " date " + str(date))
+        score = 0
         for i in range(0, delta):
           date = date + timedelta(days=delta)
           puzzle_id = wordle_helper.date_to_puzzle_id(date)
-
-          print()
-
-        return
+          day_score = database.select_user_score_for_puzzle_id(DB_FILE, user_id, puzzle_id)
+          if day_score is None:
+            day_score = 6
+          score = score + day_score 
+        await message.channel.send(name + " score " + str(score) + "/" + str(6 * (delta + 1)) + " this week")
 
       print("show week score")
 
