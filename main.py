@@ -12,6 +12,7 @@ import time
 import threading
 import database
 import json
+import wordle_helper
 f = open('config.json')
 data = json.load(f)
 
@@ -21,7 +22,6 @@ BOT_CHANNEL_ID = 879170130125414450
 BOT_TOKEN = data["token"]
 PST = pytz.timezone('US/Pacific')
 DB_FILE = r"sqliteDatabase.db"
-BASE_WORDLE_ID_TO_DATE = (244, datetime(2022, 2, 18))
 client = discord.Client()
 
 #def delete(name):
@@ -60,7 +60,6 @@ async def on_message(message):
 
   name = str(message.author) 
   user_id = database.select_user_id(DB_FILE, name)
-  today = date.today()
 
   if message.content.startswith('$hello'):
     print('moo')
@@ -105,9 +104,32 @@ async def displayScore(message, name, user_id):
 
     tokens = message.content.split()
     if len(tokens) == 1:
-      # get scores of last 7 
-      print("show week score")
+      # get scores of week
+      today = datetime.today()
+      print(today)
+      today_weekday = today.weekday()
+      if today_weekday == 0:
+        #print only today's score
+        puzzle_id = wordle_helper.date_to_puzzle_id(today)
+        print(puzzle_id)
+        score = database.select_user_score_for_puzzle_id(DB_FILE, user_id, puzzle_id)
+        if score is None:
+          score = 6
+        await message.channel.send(name + " scored " + str(score) + "/6 this week")
+      else:
+        #print scores from monday to today
+        delta = today.weekday()
+        date = today - timedelta(days=delta)
+        print("delta " + str(delta) + " date " + str(date))
+        for i in range(0, delta):
+          date = date + timedelta(days=delta)
+          puzzle_id = wordle_helper.date_to_puzzle_id(date)
 
+          print()
+
+        return
+
+      print("show week score")
 
     if len(tokens) == 2 and tokens[1].isdigit():
       print("show score")
@@ -140,22 +162,5 @@ async def addScore(message, user_id, name, puzzle_id, score):
   temp = (name + " scored " + score + " on day " + puzzle_id)
   print(temp)
 
-def date_to_puzzle_id(date):
-  delta = BASE_WORDLE_ID_TO_DATE[1] - date
-  delta_days = delta.days
-  return_id = BASE_WORDLE_ID_TO_DATE[0] + delta_days
-  if return_id > 0:
-    return return_id
-
-def puzzle_id_to_date(puzzle_id):
-  # get diff b/t base and requested puzzle_id
-  if puzzle_id <= 0:
-    return None
-  diff = puzzle_id - BASE_WORDLE_ID_TO_DATE[0]
-  return BASE_WORDLE_ID_TO_DATE[1] + timedelta(days=diff)
-
 # Execute
-date = datetime(2022, 2, 19)
-print(str(date_to_puzzle_id(date)))
-
 client.run(BOT_TOKEN)
