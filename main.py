@@ -112,7 +112,7 @@ async def displayScore(message, name, user_id):
           if day_score is None:
             day_score = 6
           score = score + day_score 
-        await message.channel.send(name + " score " + str(score) + "/" + str(6 * (delta + 1)) + " this week")
+        await message.channel.send(name + " scored " + str(score) + "/" + str(6 * (delta + 1)) + " this week")
 
       print("show week score")
 
