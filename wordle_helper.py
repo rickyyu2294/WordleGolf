@@ -20,7 +20,6 @@ def puzzle_id_to_date(puzzle_id):
 
 async def numeric_reaction(message, num):
     for e in str(num):
-        print(e)
         if e == '0':
             await message.add_reaction("0️⃣")
         elif e == '1':
