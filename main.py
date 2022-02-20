@@ -36,7 +36,7 @@ client = discord.Client()
 @client.event
 async def on_ready():
   print('We have logged in as {0.user}'.format(client))
-  print('v0.06')
+  print('v0.07')
   database.initialize_database(DB_FILE)
 
   await midnight()
@@ -105,9 +105,10 @@ async def displayScore(message, name, user_id):
         print("delta " + str(delta) + " date " + str(date))
         score = 0
         for i in range(0, delta):
-          date = date + timedelta(days=delta)
+          date = date + timedelta(days=1)
           puzzle_id = wordle_helper.date_to_puzzle_id(date)
           day_score = database.select_user_score_for_puzzle_id(DB_FILE, user_id, puzzle_id)
+          print("Puzzle " + str(puzzle_id) + " Score " + str(day_score))
           if day_score is None:
             day_score = 6
           score = score + day_score 
