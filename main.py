@@ -107,18 +107,17 @@ def weekly_score(message, user_id):
       return score
     else:
       #print scores from monday to today
-      delta = today.weekday()
-      date = today - timedelta(days=delta)
-      print("delta " + str(delta) + " date " + str(date))
+      date = today - timedelta(days=today_weekday)
+      print("delta " + str(today_weekday) + " date " + str(date))
       score = 0
-      for i in range(0, delta):
-        date = date + timedelta(days=1)
+      for i in range(0, today_weekday):
         puzzle_id = wordle_helper.date_to_puzzle_id(date)
         day_score = database.select_user_score_for_puzzle_id(DB_FILE, user_id, puzzle_id)
         print("Puzzle " + str(puzzle_id) + " Score " + str(day_score))
         if day_score is None:
           day_score = 6
         score = score + day_score 
+        date = date + timedelta(days=1)
       return score
 
       print("show week score")
