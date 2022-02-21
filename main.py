@@ -93,7 +93,7 @@ def weekly_score(message, user_id):
       return None
 
     # get scores of week
-    today = datetime.today()
+    today = datetime.today().astimezone(PST)
     print(today)
     today_weekday = today.weekday()
     if today_weekday == 0:
