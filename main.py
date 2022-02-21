@@ -70,7 +70,7 @@ async def on_message(message):
     tokens = message.content.split()
     if len(tokens) == 1:
       score = weekly_score(message, user_id)
-      total = (datetime.today().weekday() + 1) * 6
+      total = (datetime.today().astimezone(PST).weekday() + 1) * 6
       if score is not None:
         await message.channel.send(name + " scored " + str(score) + "/" + str(total) + " this week")
     elif len(tokens) == 2 and tokens[1].isdigit():
