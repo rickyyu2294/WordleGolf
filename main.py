@@ -39,16 +39,6 @@ async def on_ready():
   print('v0.08')
   database.initialize_database(DB_FILE)
 
-  await midnight()
-
-async def midnight():
-  now = datetime.now(tz=PST)
-  targetTime = datetime(now.year, now.month, now.day + 1, 0, 0, 0, 0, PST)
-  diff = (targetTime - now).total_seconds()
-  await asyncio.sleep(diff)
-  channel = client.get_channel(BOT_CHANNEL_ID)
-  #await channel.send("Is it midnight?")
-
 @client.event
 async def on_message(message):
   if message.author == client.user:
