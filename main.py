@@ -94,8 +94,9 @@ def weekly_score(message, user_id):
 
     # get scores of week
     today = datetime.today().astimezone(PST)
-    print(today)
+    print("Today " + str(today))
     today_weekday = today.weekday()
+    print("Weekday " + str(today_weekday))
     if today_weekday == 0:
       #print only today's score
       puzzle_id = wordle_helper.date_to_puzzle_id(today)
