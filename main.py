@@ -79,45 +79,43 @@ async def on_message(message):
     await addScore(message, user_id, name, puzzle_id, score)
 
 def weekly_score(message, user_id):
-    if user_id is None:
-      return None
+  if user_id is None:
+    return None
 
-    # get scores of week
-    today = datetime.today().astimezone(PST)
-    print("Today " + str(today))
-    today_weekday = today.weekday()
-    print("Weekday " + str(today_weekday))
-    if today_weekday == 0:
-      #print only today's score
-      puzzle_id = wordle_helper.date_to_puzzle_id(today)
-      print(puzzle_id)
-      score = database.select_user_score_for_puzzle_id(DB_FILE, user_id, puzzle_id)
-      if score is None:
-        score = 6
-      return score
-    else:
-      #print scores from monday to today
-      date = today - timedelta(days=today_weekday)
-      print("delta " + str(today_weekday) + " date " + str(date))
-      score = 0
-      for i in range(0, today_weekday):
-        puzzle_id = wordle_helper.date_to_puzzle_id(date)
-        day_score = database.select_user_score_for_puzzle_id(DB_FILE, user_id, puzzle_id)
-        print("Puzzle " + str(puzzle_id) + " Score " + str(day_score))
-        if day_score is None:
-          day_score = 6
-        score = score + day_score 
-        date = date + timedelta(days=1)
-      return score
-
-      print("show week score")
+  # get scores of week
+  today = datetime.today().astimezone(PST)
+  print("Today " + str(today))
+  today_weekday = today.weekday()
+  print("Weekday " + str(today_weekday))
+  if today_weekday == 0:
+    #print only today's score
+    puzzle_id = wordle_helper.date_to_puzzle_id(today)
+    print(puzzle_id)
+    score = database.select_user_score_for_puzzle_id(DB_FILE, user_id, puzzle_id)
+    if score is None:
+      score = 6
+    return score
+  else:
+    #print scores from monday to today
+    date = today - timedelta(days=today_weekday)
+    print("delta " + str(today_weekday) + " date " + str(date))
+    score = 0
+    for i in range(0, today_weekday + 1):
+      puzzle_id = wordle_helper.date_to_puzzle_id(date)
+      day_score = database.select_user_score_for_puzzle_id(DB_FILE, user_id, puzzle_id)
+      print("Puzzle " + str(puzzle_id) + "Date " + str(date) +  " Score " + str(day_score))
+      if day_score is None:
+        day_score = 6
+      score = score + day_score 
+      date = date + timedelta(days=1)
+    return score
 
 def date_score(user_id, puzzle_id):
-    score = str(database.select_user_score_for_puzzle_id(DB_FILE, user_id, puzzle_id))
-    if score is not None:
-      return score
-    else:
-      return None
+  score = str(database.select_user_score_for_puzzle_id(DB_FILE, user_id, puzzle_id))
+  if score is not None:
+    return score
+  else:
+    return None
 
 async def addScore(message, user_id, name, puzzle_id, score):
   # add new score to user's score list
