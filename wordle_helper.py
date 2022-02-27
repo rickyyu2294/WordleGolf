@@ -20,28 +20,3 @@ def puzzle_id_to_date(puzzle_id):
     diff = puzzle_id - BASE_WORDLE_ID_TO_DATE[0]
     date = BASE_WORDLE_ID_TO_DATE[1] + timedelta(days=diff)
     return date.astimezone(PST)
-
-async def numeric_reaction(message, num):
-    for e in str(num):
-        if e == '0':
-            await message.add_reaction("0️⃣")
-        elif e == '1':
-            await message.add_reaction("1️⃣")
-        elif e == '2':
-            await message.add_reaction("2️⃣")
-        elif e == '3':
-            await message.add_reaction("3️⃣")
-        elif e == '4':
-            await message.add_reaction("4️⃣")
-        elif e == '5':
-            await message.add_reaction("5️⃣")
-        elif e == '6':
-            await message.add_reaction("6️⃣")
-        elif e == '7':
-            await message.add_reaction("7️⃣")
-        elif e == '8':
-            await message.add_reaction("8️⃣")
-        elif e == '9':
-            await message.add_reaction("9️⃣")
-
-    return

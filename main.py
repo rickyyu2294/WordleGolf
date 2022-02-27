@@ -136,7 +136,6 @@ async def addScore(message, user_id, name, puzzle_id, score):
     database.add_score(DB_FILE, user_id, puzzle_id, score)
   await message.add_reaction("✅")
   week_score = weekly_score(message, user_id)
-  await wordle_helper.numeric_reaction(message, week_score)
 
   temp = (name + " scored " + score + " on day " + puzzle_id)
   print(temp)
