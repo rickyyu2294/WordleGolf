@@ -68,7 +68,8 @@ async def on_message(message):
       score = date_score(user_id, tokens[1])
       await message.channel.send(name + " scored " + str(score) + " on day " + str(tokens[1]))
     elif len(tokens) == 2:
-      score = weekly_score(message, tokens[1])
+      user_id = database.select_user_id(DB_FILE, tokens[1])
+      score = weekly_score(message, user_id)
       total = (datetime.today().astimezone(PST).weekday() + 1) * 6
       if score is not None:
         await message.channel.send(tokens[1] + " scored " + str(score) + "/" + str(total) + " this week")
@@ -103,6 +104,7 @@ def weekly_score(message, user_id):
     return score
   else:
     #print scores from monday to today
+    print(user_id)
     date = today - timedelta(days=today_weekday)
     print("delta " + str(today_weekday) + " date " + str(date))
     score = 0
