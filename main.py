@@ -64,8 +64,14 @@ async def on_message(message):
       if score is not None:
         await message.channel.send(name + " scored " + str(score) + "/" + str(total) + " this week")
     elif len(tokens) == 2 and tokens[1].isdigit():
+      # score for specific day
       score = date_score(user_id, tokens[1])
       await message.channel.send(name + " scored " + str(score) + " on day " + str(tokens[1]))
+    elif len(tokens) == 2:
+      score = weekly_score(message, tokens[1])
+      total = (datetime.today().astimezone(PST).weekday() + 1) * 6
+      if score is not None:
+        await message.channel.send(tokens[1] + " scored " + str(score) + "/" + str(total) + " this week")
 
   # Match Wordle Message
   pattern = re.compile("Wordle [0-9].. [0-9]/[0-9]")
